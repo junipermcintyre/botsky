@@ -1,0 +1,32 @@
+{
+  "name": "australiabot",
+  "version": "0.0.1",
+  "description": "Bot for green go server stuff",
+  "main": "server.js",
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "yargs": "^16.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/L41rx/AustraliaBot.git"
+  },
+  "keywords": [
+    "AustraliaBot",
+    "Discord",
+    "Bot"
+  ],
+  "author": "June",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/L41rx/AustraliaBot/issues"
+  },
+  "homepage": "https://github.com/L41rx/AustraliaBot#readme"
+}
