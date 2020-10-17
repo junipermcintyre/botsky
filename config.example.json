@@ -2,5 +2,10 @@
 	"prefix": "!",
 	"token": "LOLOLOLOLOLOLOLOLOL",
 	"bot_channel_id": "LOLOLOLOLOLOLOLOLOL",
-	"default_poll_rate": 1000
+	"default_poll_rate": 1000,
+	"express_app": {
+		"enabled": true,
+		"port": 3000,
+		"hashed_api_password": "171c84aaeea7fcbf309468fbee54b099"
+	}
 }

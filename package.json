@@ -1,11 +1,13 @@
 {
-  "name": "australiabot",
+  "name": "botsky",
   "version": "0.0.1",
-  "description": "Bot for green go server stuff",
+  "description": "Bot for trotsky server stuff",
   "main": "server.js",
   "dependencies": {
     "discord.js": "^12.3.1",
+    "express": "^4.17.1",
     "fs": "^0.0.1-security",
+    "md5": "^2.3.0",
     "path": "^0.12.7",
     "yargs": "^16.0.3"
   },
@@ -16,17 +18,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/L41rx/AustraliaBot.git"
+    "url": "git+https://github.com/junipermcintyre/botsky"
   },
   "keywords": [
-    "AustraliaBot",
+    "Botsky",
+    "Marxism",
+    "Socialism",
     "Discord",
     "Bot"
   ],
   "author": "June",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/L41rx/AustraliaBot/issues"
+    "url": "https://github.com/junipermcintyre/botsky/issues"
   },
-  "homepage": "https://github.com/L41rx/AustraliaBot#readme"
+  "homepage": "https://github.com/junipermcintyre/botsky#readme"
 }

@@ -7,5 +7,5 @@ require("fs").readdirSync(normalizedPath).forEach(function(file) {
 */
 
 module.exports = {
-
+	news_to_messages_via_web: require('./NewsToMessagesViaWeb')
 };

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Botsky is made to be useful, hopefully
+ * Botsky is made by me for me for me and my comrades
  * It probably will work very poorly
  * This file is an entrypoint to the application. Run it, and 
  * it will enable the commands and services in src/
@@ -17,6 +17,9 @@ const functions = require('./functions.js');
 const Discord = require('discord.js');
 const services = require('./src/services');
 const commands = require('./src/commands');
+const express = require("express"); // >:(
+const express_app = express();
+express_app.use(express.json());
 
 /* Connect to discord */
 const client = new Discord.Client();
@@ -25,18 +28,28 @@ client.on('ready', () => {
     functions.log(`Logged in as ${client.user.tag}!`);
 });
 
+
 /* Register services */
 client.on('ready', () => {
     functions.log(`Registering services...`);
     for (const service in services) {
         try {
             let s = new services[service](config, client);
-            s.register(client);
+            s.register(client, express_app);
             functions.log("Registered: " + services[service].name);
         } catch (e) {
             functions.log("Failed registering: " + services[service].name);
             functions.log(e);
         }
+    }
+
+    /* Launch a webserver */
+    if (config.express_app.enabled) {
+        express_app.listen(config.express_app.port, () => {
+            functions.log("Express app running on " + config.express_app.port);
+            let endpoints = express_app._router.stack.filter(x=> x.route && x.route.path && Object.keys(x.route.methods) !== 0).map(layer => ({ method :layer.route.stack[0].method.toUpperCase(), path: layer.route.path}));
+            functions.log(endpoints);
+        });
     }
 });
 
@@ -76,4 +89,3 @@ client.on('message', msg => {
         }
     }
 });
-

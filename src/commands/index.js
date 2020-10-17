@@ -9,5 +9,6 @@ module.exports = {
 	unmute_all: require('./UnmuteAll'),
 	deafen_all: require('./DeafenAll'),
 	undeafen_all: require('./UndeafenAll'),
-	ping: require('./Ping')
+	ping: require('./Ping'),
+	md5: require('./Md5')
 };

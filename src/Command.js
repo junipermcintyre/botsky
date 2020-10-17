@@ -4,17 +4,9 @@ module.exports = class Command {
         this.msg = msg;
     }
 
-    static get command() {
-        return null;
-    }
-
-    static get name() {
-        return null;
-    }
-
-    static get permissions() {
-        return [];
-    }
+    static get command()     { return null; }
+    static get name()        { return null; }
+    static get permissions() { return []; }
 
     async execute(client) {
         throw new Error('Execute is not implemented in command ' + this.constructor.name);
