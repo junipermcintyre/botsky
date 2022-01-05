@@ -18,6 +18,7 @@ module.exports = class NewsToMessagesViaWeb extends Service {
     constructor(config, client) {
         super(config, client);
         this.hashed_password = config.express_app.hashed_api_password;
+        this.sites_to_channels = config.sites_to_channels;
     }
 
     /**
@@ -43,7 +44,7 @@ module.exports = class NewsToMessagesViaWeb extends Service {
                 } else {
                     // execute
                     let news = this.makeNews(req.body)
-                    this.postNews(news, client, req.body);
+                    this.postNews(news, client, req.body, req.body.site);
                     res.sendStatus(200);
                 }
             }
@@ -104,12 +105,12 @@ module.exports = class NewsToMessagesViaWeb extends Service {
      * @param request_body
      * @returns {Promise<void>}
      */
-    async postNews(news, client, request_body) {
-        let channels = this.getAffectedChannels(client, "news");
+    async postNews(news, client, request_body, site_name) {
+        let channels = this.getAffectedChannels(client, site_name);
         for (var i = 0; i < channels.length; i++) {
             try {
                 let embed_result = await channels[i].send(news);
-                functions.log("Sent news '"+request_body.title+"' to "+channels[i].guild.name)
+                functions.log("Sent news '"+request_body.title+"' to "+channels[i].guild.name+" in channel "+channels[i].name)
             } catch (error) {
                 functions.log(error, "Error");
             }
@@ -122,16 +123,35 @@ module.exports = class NewsToMessagesViaWeb extends Service {
      * @param channel_name
      * @returns {[]}
      */
-    getAffectedChannels(client, channel_name) {
+    getAffectedChannels(client, site_name) {
+        console.log(site_name);
         var _that = this;
         var _channels = [];
+
+        
+        if (typeof this.sites_to_channels[site_name] !== 'undefined') {
+            var channel_names = this.sites_to_channels[site_name];
+        } else {
+            var channel_names = ["news"];
+        }
+
         client.channels.cache.each(channel => {
-            if (channel.type === 'text' && channel_name.toLowerCase() === channel.name.toLowerCase()) {
-                _channels.push(channel);
+            for (var i = 0; i < channel_names.length; i++) {
+                if (channel.type === 'text' && channel_names[i].toLowerCase() === channel.name.toLowerCase()) {
+                    _channels.push(channel);
+                }
             }
         });
-        if (_channels.length === 0)
-            throw new Error("Cannot find any channels called " + channel_name);
+        if (_channels.length === 0) { // look for "news" if the specific one from config is missing
+            client.channels.cache.each(channel => {
+                if (channel.type === 'text' && "news" === channel.name.toLowerCase()) {
+                    _channels.push(channel);
+                }
+            });
+        }
+        if (_channels.length === 0) { // if still 0 throw error
+            throw new Error("Cannot find any channels called: " + channel_names.join() + " or 'news'");
+        }
         else
             return _channels;
     }
