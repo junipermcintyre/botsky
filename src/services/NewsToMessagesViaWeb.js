@@ -43,8 +43,9 @@ module.exports = class NewsToMessagesViaWeb extends Service {
                     res.sendStatus(400);
                 } else {
                     // execute
-                    let news = this.makeNews(req.body)
-                    this.postNews(news, client, req.body, req.body.site);
+                    let channels_tag = this.getAffectedChannelsAndTags(client, req.body.site);
+                    let news = this.makeNews(req.body, channels_tag.tag)
+                    this.postNews(news, client, req.body, channels_tag.channels);
                     res.sendStatus(200);
                 }
             }
@@ -77,12 +78,16 @@ module.exports = class NewsToMessagesViaWeb extends Service {
      * @param request_body
      * @returns {string}
      */
-    makeNews(request_body) {
-        return "**There's news!**\n"
-            + "*"+request_body.title+"*\n"
+    makeNews(request_body, tag) {
+        var string = "**There's news!**\n";
+        if (tag !== null) {
+            string += '<@&'+tag+'>'+"\n";
+        }
+        string += "*"+request_body.title+"*\n"
             + "By "+request_body.author+", "+request_body.date+"\n"
             + "*Posted to "+request_body.site+"*\n"
             + request_body.link;
+        return string;
 
         // embeds mean we need to send the picture...
         // harder than using discords opengraph check on links in normal messages
@@ -105,8 +110,7 @@ module.exports = class NewsToMessagesViaWeb extends Service {
      * @param request_body
      * @returns {Promise<void>}
      */
-    async postNews(news, client, request_body, site_name) {
-        let channels = this.getAffectedChannels(client, site_name);
+    async postNews(news, client, request_body, channels) {
         for (var i = 0; i < channels.length; i++) {
             try {
                 let embed_result = await channels[i].send(news);
@@ -119,20 +123,21 @@ module.exports = class NewsToMessagesViaWeb extends Service {
 
     /**
      * Custom search method
+     * And also the tags...
      * @param client
      * @param channel_name
      * @returns {[]}
      */
-    getAffectedChannels(client, site_name) {
-        console.log(site_name);
+    getAffectedChannelsAndTags(client, site_name) {
         var _that = this;
         var _channels = [];
 
-        
         if (typeof this.sites_to_channels[site_name] !== 'undefined') {
-            var channel_names = this.sites_to_channels[site_name];
+            var channel_names = this.sites_to_channels[site_name].channels;
+            var tag = this.sites_to_channels[site_name].tag;
         } else {
             var channel_names = ["news"];
+            var tag = null;
         }
 
         client.channels.cache.each(channel => {
@@ -153,6 +158,6 @@ module.exports = class NewsToMessagesViaWeb extends Service {
             throw new Error("Cannot find any channels called: " + channel_names.join() + " or 'news'");
         }
         else
-            return _channels;
+            return {channels: _channels, tag: tag};
     }
 }
